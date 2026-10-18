@@ -1,17 +1,17 @@
-/* Hold for 2x popup
-   Direction: Warm Premium (visual-direction), Fraunces + Work Sans, one bronze accent.
-   Type scale (Perfect Fourth from 16): 12 / 16 / 21 / 28, display 88.
-   Spacing on an 8px grid. Fonts are bundled, so nothing loads from the network. */
+/* Hold for 2x popup: Frost UI (soft glass, low blur, neutral colours).
+   Geist for text and the number, Geist Mono for labels, scale and keys (both bundled, OFL).
+   8px spacing grid, 44px+ controls.
+   Light and dark are separate token sets; components only use the semantic tokens. */
 
 @font-face {
-  font-family: "Fraunces";
-  src: url("../fonts/fraunces-latin-full-normal.woff2") format("woff2");
+  font-family: "Geist";
+  src: url("../fonts/geist-latin-wght-normal.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
 }
 @font-face {
-  font-family: "Work Sans";
-  src: url("../fonts/work-sans-latin-wght-normal.woff2") format("woff2");
+  font-family: "Geist Mono";
+  src: url("../fonts/geist-mono-latin-wght-normal.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
 }
@@ -19,246 +19,172 @@
 :root {
   color-scheme: light dark;
 
-  /* primitives */
-  --sand-50: #FBF8F4;
-  --sand-100: #F5F0EB;
-  --sand-200: #E8E0D5;
-  --ink-900: #1A1A1A;
-  --ink-600: #5E574D;
-  --bronze-600: #9A6436;
-  --bronze-300: #D0A57A;
-  --night-900: #1A1816;
-  --night-800: #221F1C;
-  --night-700: #2C2824;
-  --bone-100: #E6E0D6;
-  --bone-400: #A39B8F;
+  --text: #1C1F24;
+  --muted: #5C6470;
+  --accent: #3E4C66;               /* slate: fill, focus, logo */
+  --page: #EEF0F3;
+  --glow-a: #DCE5FA;               /* soft background light, top right */
+  --glow-b: #F3E5EE;               /* soft background light, bottom left */
+  --frost: rgba(255, 255, 255, .58);
+  --frost-strong: rgba(255, 255, 255, .78);
+  --frost-hover: #FFFFFF;
+  --edge: rgba(255, 255, 255, .95);
+  --track: rgba(28, 31, 36, .08);
+  --tick: rgba(28, 31, 36, .28);
+  --tick-major: rgba(28, 31, 36, .5);
+  --knob: #FFFFFF;
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, .04), 0 10px 28px -8px rgba(16, 24, 40, .12);
+  --shadow-control: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 10px -2px rgba(16, 24, 40, .10);
+  --shadow-knob: 0 0 0 1px rgba(28, 31, 36, .08), 0 2px 6px rgba(16, 24, 40, .20);
 
-  /* semantic */
-  --bg: var(--sand-100);
-  --raised: var(--sand-50);
-  --control: var(--sand-100);
-  --text: var(--ink-900);
-  --muted: var(--ink-600);
-  --accent: var(--bronze-600);
-  --line: rgba(26, 26, 26, .09);
-  --edge-hi: rgba(255, 255, 255, .9);
-  --grain-opacity: .035;
-
-  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --sans: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --space-1: 8px;
-  --space-2: 16px;
-  --space-3: 24px;
-  --radius-control: 12px;
-  --radius-card: 16px;
-
-  /* beautiful-shadows */
-  --shadow-sm: 0 2px 3px -1px rgba(0,0,0,.10), 0 1px 0 0 rgba(25,28,33,.02), 0 0 0 1px rgba(25,28,33,.08);
-  --shadow-md: 0 0 0 1px rgba(0,0,0,.06), 0 1px 1px -.5px rgba(0,0,0,.06), 0 3px 3px -1.5px rgba(0,0,0,.06),
-               0 6px 6px -3px rgba(0,0,0,.06), 0 12px 12px -6px rgba(0,0,0,.06), 0 24px 24px -12px rgba(0,0,0,.06);
-
-  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --font: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;       /* interface text */
+  --display: var(--font);                                                  /* speed number, title */
+  --meta: "Geist Mono", ui-monospace, Consolas, monospace;                 /* labels, scale, keys */
+  --unit-font: var(--font);                                                /* the "x" */
+  --ease: cubic-bezier(.22, 1, .36, 1);
 }
 
-/* dark is its own scheme, not an inversion: warm greys, muted accent, elevation by lighter surfaces */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: var(--night-900);
-    --raised: var(--night-800);
-    --control: var(--night-700);
-    --text: var(--bone-100);
-    --muted: var(--bone-400);
-    --accent: var(--bronze-300);
-    --line: rgba(230, 224, 214, .09);
-    --edge-hi: rgba(230, 224, 214, .14);
-    --grain-opacity: .05;
-    --shadow-sm: 0 0 0 1px rgba(230,224,214,.08), 0 2px 3px -1px rgba(0,0,0,.4);
-    --shadow-md: 0 0 0 1px rgba(230,224,214,.07), 0 12px 24px -12px rgba(0,0,0,.6);
+    --text: #E8EAED;
+    --muted: #9AA1AC;
+    --accent: #AFBBD4;
+    --page: #15171B;
+    --glow-a: #1F2840;
+    --glow-b: #2A1F29;
+    --frost: rgba(255, 255, 255, .06);
+    --frost-strong: rgba(255, 255, 255, .09);
+    --frost-hover: rgba(255, 255, 255, .14);
+    --edge: rgba(255, 255, 255, .10);
+    --track: rgba(255, 255, 255, .10);
+    --tick: rgba(255, 255, 255, .25);
+    --tick-major: rgba(255, 255, 255, .5);
+    --knob: #F2F4F7;
+    --shadow-card: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 12px 30px -10px rgba(0, 0, 0, .6);
+    --shadow-control: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 4px 10px -2px rgba(0, 0, 0, .5);
+    --shadow-knob: 0 0 0 1px rgba(0, 0, 0, .3), 0 2px 6px rgba(0, 0, 0, .5);
   }
 }
 
 * { box-sizing: border-box; margin: 0; }
 
+html { background: var(--page); }
+
 body {
-  position: relative;
   width: 304px;
-  background: var(--bg);
   color: var(--text);
-  font: 400 16px/1.5 var(--sans);
+  font: 400 15px/1.45 var(--font);
   -webkit-font-smoothing: antialiased;
-}
-/* fine grain for a paper feel */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: var(--grain-opacity);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background:
+    radial-gradient(60% 45% at 85% 0%, var(--glow-a) 0, transparent 70%),
+    radial-gradient(55% 40% at 0% 100%, var(--glow-b) 0, transparent 70%),
+    var(--page);
 }
 
-.popup {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-2);
-}
+.popup { display: flex; flex-direction: column; gap: 16px; padding: 16px; }
 
 /* ---------- header ---------- */
 
 header { display: flex; align-items: center; gap: 10px; }
-header img { width: 24px; height: 24px; border-radius: 7px; }
-h1 {
-  font: 600 21px/1.2 var(--serif);
-  font-variation-settings: "opsz" 36, "SOFT" 50;
-  letter-spacing: -.01em;
+.logo {
+  display: grid; place-items: center; width: 26px; height: 26px; flex: none;
+  border-radius: 8px; border: 1px solid var(--edge);
+  background: var(--frost-strong); color: var(--accent);
+  box-shadow: var(--shadow-control);
+}
+.logo svg { width: 13px; height: 13px; fill: currentColor; }
+h1 { font: 600 16px/1.2 var(--display); }
+
+/* ---------- frosted card ---------- */
+
+.card {
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid var(--edge);
+  background: var(--frost);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
 }
 
-/* ---------- meter card ---------- */
+.label { font: 600 12px/1.45 var(--meta); color: var(--muted); }
 
-.meter {
-  padding: var(--space-2) var(--space-2) var(--space-1);
-  border-radius: var(--radius-card);
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--raised), var(--raised)) padding-box,
-    linear-gradient(180deg, var(--edge-hi), var(--line) 40%) border-box;
-  box-shadow: var(--shadow-md);
-}
+.value { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 14px; }
 
-.label {
-  font: 600 12px/1.5 var(--sans);
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.value {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin: var(--space-1) 0 var(--space-2);
-}
-
-.readout {
-  display: flex;
-  align-items: baseline;
-  min-width: 0;
-  cursor: text;
-}
+.readout { display: flex; align-items: baseline; cursor: text; }
 .readout input {
-  field-sizing: content; /* the field hugs its text so the "x" sits right after it */
+  field-sizing: content; /* hugs the number so the "x" sits right after it */
   min-width: 1ch;
-  padding: 0 0 2px;
+  padding: 0;
   border: 0;
-  border-bottom: 2px solid transparent;
   outline: 0;
   background: transparent;
   color: var(--text);
-  font: 400 88px/1 var(--serif);
-  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 0;
+  font: 500 88px/1 var(--display);
   font-variant-numeric: lining-nums;
-  letter-spacing: -.03em;
+  letter-spacing: -.05em;
   caret-color: var(--accent);
-  transition: border-color .15s var(--ease-out);
 }
-.readout:hover input { border-bottom-color: var(--line); }
-.readout input:focus { border-bottom-color: var(--accent); }
-.readout .unit {
-  margin-left: 4px;
-  font: 400 28px/1 var(--serif);
-  font-variation-settings: "opsz" 72, "SOFT" 100;
-  color: var(--muted);
-}
-/* each 0.25x step settles in like a detent */
-.readout input.settle { animation: settle .22s var(--ease-out); }
-@keyframes settle { from { transform: translateY(5px); opacity: .55; } to { transform: none; opacity: 1; } }
+.readout .unit { margin-left: 4px; font: 400 28px/1 var(--unit-font); color: var(--muted); }
+/* each 0.25x step settles in place */
+.readout input.settle { animation: settle .22s var(--ease); }
+@keyframes settle { from { transform: translateY(4px); opacity: .6; } to { transform: none; opacity: 1; } }
 
-.steps { display: grid; gap: var(--space-1); }
+.steps { display: grid; gap: 10px; }
 .steps button {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: var(--radius-control);
-  background: var(--control);
-  box-shadow: var(--shadow-sm);
+  display: grid; place-items: center;
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--edge);
+  background: var(--frost-strong);
+  box-shadow: var(--shadow-control);
   color: var(--text);
-  font: 400 21px/1 var(--sans);
+  font: 400 22px/1 var(--font);
   cursor: pointer;
-  transition: transform .12s var(--ease-out), background-color .12s var(--ease-out);
+  touch-action: manipulation;
+  transition: transform .12s var(--ease), background-color .15s ease;
 }
-.steps button:hover:not(:disabled) { background: var(--raised); }
 .steps button:active:not(:disabled) { transform: scale(.95); }
-.steps button:disabled { opacity: .35; cursor: default; box-shadow: none; }
-button:focus-visible, .ruler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.steps button:disabled { opacity: .35; cursor: default; }
+@media (hover: hover) and (pointer: fine) {
+  .steps button:hover:not(:disabled) { background: var(--frost-hover); }
+}
+button:focus-visible, .ruler:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ---------- ruler ---------- */
 
-.ruler {
-  position: relative;
-  height: 44px;
-  margin: 0 6px;
-  cursor: pointer;
-  touch-action: none;
-  user-select: none;
-  border-radius: 4px;
-}
-.track { position: absolute; left: 0; right: 0; top: 10px; height: 2px; border-radius: 1px; background: var(--line); }
-.fill { height: 100%; border-radius: inherit; background: var(--accent); transition: width .2s var(--ease-out); }
-.tk { position: absolute; top: 15px; width: 1px; height: 4px; margin-left: -.5px; background: var(--muted); opacity: .5; }
-.tk.major { height: 7px; opacity: .9; }
-.rl {
-  position: absolute;
-  top: 24px;
-  transform: translateX(-50%);
-  font: 500 12px/1.5 var(--sans);
-  font-variant-numeric: tabular-nums;
-  color: var(--muted);
-}
+.ruler { position: relative; height: 42px; margin: 0 6px; cursor: pointer; touch-action: none; user-select: none; border-radius: 6px; }
+.track { position: absolute; left: 0; right: 0; top: 9px; height: 6px; border-radius: 6px; background: var(--track); overflow: hidden; }
+.fill { height: 100%; border-radius: inherit; background: var(--accent); transition: width .2s var(--ease); }
 .knob {
-  position: absolute;
-  top: 4px;
-  width: 14px;
-  height: 14px;
-  margin-left: -7px;
-  border-radius: 50%;
-  background: var(--raised);
-  box-shadow: 0 0 0 2px var(--accent), 0 2px 4px rgba(0,0,0,.18);
-  transition: left .2s var(--ease-out), transform .12s var(--ease-out);
+  position: absolute; top: 3px; width: 18px; height: 18px; margin-left: -9px;
+  border-radius: 50%; background: var(--knob); box-shadow: var(--shadow-knob);
+  transition: left .2s var(--ease), transform .12s var(--ease);
 }
-.ruler:active .knob { transform: scale(1.15); }
+.ruler:active .knob { transform: scale(1.12); }
+.tk { position: absolute; top: 20px; width: 1px; height: 3px; margin-left: -.5px; background: var(--tick); }
+.tk.major { height: 5px; background: var(--tick-major); }
+.rl {
+  position: absolute; top: 27px; transform: translateX(-50%);
+  font: 400 12px/1 var(--meta); font-variant-numeric: tabular-nums; color: var(--muted);
+}
 
 /* ---------- hint + keys ---------- */
 
-.hint { padding: 0 var(--space-1); color: var(--muted); }
+.hint { padding: 0 4px; font-size: 14px; color: var(--muted); }
 .hint.saved, .hint.alert { color: var(--text); }
 
-.keys {
-  display: flex;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-1) 0;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  color: var(--muted);
-}
+.keys { display: flex; gap: 14px; padding: 0 4px; font-size: 12px; color: var(--muted); }
 .keys span { display: inline-flex; align-items: center; gap: 6px; }
 kbd {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 6px;
-  background: var(--raised);
-  box-shadow: var(--shadow-sm);
-  color: var(--text);
-  font: 600 12px/1 var(--sans);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 24px; padding: 0 7px;
+  border-radius: 7px; border: 1px solid var(--edge);
+  background: var(--frost-strong); box-shadow: var(--shadow-control);
+  color: var(--text); font: 600 12px/1 var(--meta);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .readout input.settle { animation: none; }
+  .fill, .knob, .steps button { transition: none; }
 }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hold for 2x",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Press and hold on any video to play it at 2x. Let go to go back to normal speed.",
   "permissions": ["storage"],
   "icons": {

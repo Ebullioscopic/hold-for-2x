@@ -11,7 +11,7 @@ This file is the handoff from the Claude chat where the project was started. Rea
 - Ask before adding any new UI element or feature. The owner has said this explicitly.
 - Do not claim something works unless it was run. The chat environment had no browser and no network, so nothing below has been tested in a real browser (see "Not verified").
 
-## Current state (v2.3.0)
+## Current state (v2.4.0)
 
 Working and in the repo folder:
 
@@ -30,7 +30,9 @@ src/content.js       all page behavior (hold detection, space handling, badge, k
 src/popup.html       toolbar popup markup
 src/popup.css        popup styles (light/dark via prefers-color-scheme)
 src/popup.js         stepper, typed input, clamping, hint message
-icons/               icon16/48/128.png (blue rounded square, two white forward triangles)
+icons/               icon16/48/128.png (slate rounded square, two white forward triangles)
+fonts/               Geist + Geist Mono WOFF2 and their OFL licenses
+scripts/package.sh   builds the release zip into dist/
 README.md, LICENSE (MIT), .gitignore
 ```
 
@@ -51,22 +53,22 @@ Do not "simplify" these without understanding why they exist.
 - **Cap is 4x** because browser audio tends to break up beyond that. Minimum is 1.25x.
 - **Reduced motion is respected** (badge fade and button transitions turn off).
 
-## Design decisions (v2.3.0 popup)
+## Design decisions (v2.4.0 popup)
 
-- Direction: "Warm Premium" from the `visual-direction` skill (flitzrrr/frontend-design-skills), checked against `ui-design`, `web-typography`, `color-theory`.
-- Fonts: Fraunces (speed number, wordmark) + Work Sans (everything else). Two families max. Bundled as WOFF2 in `fonts/` (OFL), never loaded from a CDN.
-- Type scale (Perfect Fourth from 16): 12 / 16 / 21 / 28, display 88. Spacing on an 8px grid. Buttons 44x44.
-- Light tokens: bg `#F5F0EB`, raised `#FBF8F4`, text `#1A1A1A`, muted `#5E574D`, accent bronze `#9A6436`.
-- Dark tokens (own scheme, not inverted): bg `#1A1816`, raised `#221F1C`, control `#2C2824`, text `#E6E0D6`, muted `#A39B8F`, accent `#D0A57A`.
-- Shadows from `beautiful-shadows` (sm on controls, md on the card); subtle top-edge highlight from `css-border-gradient`.
-- Motion: the number settles 5px on each change (220ms, cubic-bezier(.22,1,.36,1)); everything off under reduced motion.
+- Style: Frost UI (soft glass, low blur, neutral colours), chosen by the owner from six styles in the dev.to "Modern Web Design Styles" guide. Earlier rejected: cobalt system look, Paper, Warm Premium.
+- Fonts: Geist (text, title, speed number) + Geist Mono (label, scale numbers, keys). Bundled WOFF2 in `fonts/` (OFL). Font roles are CSS variables: `--font`, `--display`, `--meta`, `--unit-font`.
+- Light: page `#EEF0F3` with soft glows `#DCE5FA` / `#F3E5EE`, frosted card `rgba(255,255,255,.58)` + 10px blur, text `#1C1F24`, muted `#5C6470`, accent slate `#3E4C66`.
+- Dark (own scheme): page `#15171B`, glows `#1F2840` / `#2A1F29`, card `rgba(255,255,255,.06)`, text `#E8EAED`, muted `#9AA1AC`, accent `#AFBBD4`.
+- 8px spacing, 46px buttons, ruler slider snapping to 0.25x with keyboard support. Number settles 4px on change; reduced motion turns it off.
 - Speed number uses `field-sizing: content` so the "x" sits right after it.
+- Icon: slate `#3E4C66` rounded square with two white triangles.
 
 ## Versioning
 
 - Semantic versioning, tags `vX.Y.Z`, notes in `CHANGELOG.md`. Bump `manifest.json` version with every release.
 - `main` holds released versions only. New work goes on `feature/*` branches and merges after the owner approves.
-- v3 (customizable on-video badge) is in progress on `feature/v3-badge`.
+- v3 (customizable on-video badge) is in progress on `feature/v3-badge` (local only). Owner also wants in v3: an "off on this site" switch with a "remember always" option (needs `activeTab`).
+- Releases: `scripts/package.sh` builds `dist/hold-for-2x-vX.Y.Z.zip` (extension files only). Attach it to the GitHub Release for the tag.
 
 ## Not verified
 

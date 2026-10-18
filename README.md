@@ -6,14 +6,13 @@ It works the way holding the screen does in a phone video app, but on the web, i
 
 ## Install
 
-There's no build step.
+1. Go to [Releases](https://github.com/xmanojpx/hold-for-2x/releases/latest) and download `hold-for-2x-vX.Y.Z.zip`.
+2. Unzip it. You get a `hold-for-2x` folder.
+3. Open `chrome://extensions` and turn on **Developer mode** (top right).
+4. Click **Load unpacked** and choose the `hold-for-2x` folder.
+5. Refresh any video tab that was already open.
 
-1. Download or clone this repo.
-2. Open `chrome://extensions` and turn on **Developer mode**.
-3. Click **Load unpacked** and choose the `hold-for-2x` folder.
-4. Refresh any video tab that was already open.
-
-Works in Chrome and other Chromium browsers (Edge, Brave).
+Works in Chrome and other Chromium browsers (Edge, Brave). There's no build step, so you can also clone the repo and load the folder directly.
 
 ## Use
 
@@ -35,7 +34,7 @@ The extension collects nothing and makes no network requests. The only thing it 
 
 ## Credits
 
-The popup uses [Fraunces](https://github.com/undercasetype/Fraunces) and [Work Sans](https://github.com/weiweihuanghuang/Work-Sans), both under the SIL Open Font License 1.1. The font files and their licenses are in `fonts/`.
+The popup uses [Geist and Geist Mono](https://github.com/vercel/geist-font), under the SIL Open Font License 1.1. The font files and their licenses are in `fonts/`.
 
 ## License
 
