@@ -19,6 +19,7 @@ Works in Chrome and other Chromium browsers (Edge, Brave). There's no build step
 - **Hold** the left mouse button on a playing video. After a quarter of a second it speeds up. Release to go back.
 - **Hold the space bar** to do the same thing from the keyboard. A quick tap still plays and pauses.
 - **Set your speed** from the toolbar icon. Type a value, use the + and − buttons, or drag the ruler. The default is 2x, and anything from 1.25x to 4x works.
+- **Turn it off on a site** from the toolbar icon. On a page with a video you'll see a switch for that site. It stays off until you reload the tab, or tick "Remember for this site" to keep it off. Handy on YouTube, which already has its own hold-Space-for-2x.
 - **Change it from the keyboard** with `[` (slower) and `]` (faster), in steps of 0.25x. A small badge shows the new speed.
 
 ## Good to know
@@ -30,7 +31,7 @@ Works in Chrome and other Chromium browsers (Edge, Brave). There's no build step
 
 ## Privacy
 
-The extension collects nothing and makes no network requests. The only thing it stores is your chosen speed, locally in your browser.
+The extension collects nothing and makes no network requests. The only things it stores are your chosen speed and the sites you turned off, locally in your browser. It needs no permissions beyond storage.
 
 ## Credits
 

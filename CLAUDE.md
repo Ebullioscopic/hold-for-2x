@@ -11,7 +11,7 @@ This file is the handoff from the Claude chat where the project was started. Rea
 - Ask before adding any new UI element or feature. The owner has said this explicitly.
 - Do not claim something works unless it was run. The chat environment had no browser and no network, so nothing below has been tested in a real browser (see "Not verified").
 
-## Current state (v2.4.0)
+## Current state (v2.5.0)
 
 Working and in the repo folder:
 
@@ -21,6 +21,8 @@ Working and in the repo folder:
 - `[` and `]` change the hold speed in 0.25x steps on any page.
 - A small badge shows the speed while holding and briefly when the speed changes.
 - Popup follows the system light/dark theme.
+- Per-site off switch in the popup, shown only when the tab has a real video. "Off" is per tab until reload (in-memory in the content script); "Remember for this site" stores the host in `chrome.storage.local.disabledSites`. The host is the address-bar site, read from `location.ancestorOrigins` so embedded player frames use the parent site. No extra permission: the popup messages the tab and only frames with a video reply.
+- Space bar is relayed into child iframes that report having a video (postMessage tagged `hold-for-2x`), so embedded players work without clicking into them first.
 
 ## File map
 
@@ -67,7 +69,7 @@ Do not "simplify" these without understanding why they exist.
 
 - Semantic versioning, tags `vX.Y.Z`, notes in `CHANGELOG.md`. Bump `manifest.json` version with every release.
 - `main` holds released versions only. New work goes on `feature/*` branches and merges after the owner approves.
-- v3 (customizable on-video badge) is in progress on `feature/v3-badge` (local only). Owner also wants in v3: an "off on this site" switch with a "remember always" option (needs `activeTab`).
+- v3 (customizable on-video badge) is in progress on `feature/v3-badge` (local only).
 - Releases: `scripts/package.sh` builds `dist/hold-for-2x-vX.Y.Z.zip` (extension files only). Attach it to the GitHub Release for the tag.
 
 ## Not verified
@@ -87,7 +89,7 @@ Mockups were shown for four extras. The owner has not said which to build. Do no
 | --- | --- |
 | On/off switch in the popup | Overlaps with the per-site switch. Chrome already has an on/off on the extensions page. Recommended to skip. |
 | Preset chips (1.5x, 2x, 3x) | Optional. The stepper and typed input already cover this. |
-| Per-site switch ("Active on netflix.com") | Most useful of the four. Needs the `tabs` or `activeTab` permission to read the current site. |
+| Per-site switch | Built in v2.5.0 (owner asked for it). No extra permission needed. |
 | Rebindable shortcut keys | Heaviest and cluttered for little use. Recommended to skip. |
 
 ## Next steps, in order

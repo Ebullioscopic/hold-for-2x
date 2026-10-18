@@ -169,6 +169,59 @@ button:focus-visible, .ruler:focus-visible { outline: 2px solid var(--accent); o
   font: 400 12px/1 var(--meta); font-variant-numeric: tabular-nums; color: var(--muted);
 }
 
+/* ---------- this site ---------- */
+
+.site {
+  padding: 12px 14px 12px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--edge);
+  background: var(--frost);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
+}
+.site[hidden], .site-off[hidden] { display: none; }
+.site-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.site-text { min-width: 0; }
+.host { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* switch: 44x26 hit area, thumb slides with transform */
+.switch {
+  position: relative; flex: none;
+  width: 44px; height: 26px; padding: 0;
+  border: 0; border-radius: 999px;
+  background: var(--track);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  cursor: pointer; touch-action: manipulation;
+  transition: background-color .2s ease;
+}
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch .thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--knob); box-shadow: var(--shadow-knob);
+  transition: transform .2s var(--ease);
+}
+.switch[aria-checked="true"] .thumb { transform: translateX(18px); }
+.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.site-off { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--track); }
+.remember { display: flex; align-items: center; gap: 10px; min-height: 28px; font-size: 14px; cursor: pointer; }
+.remember input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.remember .box {
+  display: grid; place-items: center; flex: none;
+  width: 18px; height: 18px; border-radius: 5px;
+  border: 1.5px solid var(--tick-major); background: var(--frost-strong);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.remember input:checked + .box { background: var(--accent); border-color: var(--accent); }
+.remember input:checked + .box::after {
+  content: ""; width: 9px; height: 5px; margin-top: -2px;
+  border: solid var(--knob); border-width: 0 0 2px 2px; transform: rotate(-45deg);
+}
+.remember input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 2px; }
+.site-note { margin-top: 4px; font: 400 12px/1.45 var(--meta); color: var(--muted); }
+
 /* ---------- hint + keys ---------- */
 
 .hint { padding: 0 4px; font-size: 14px; color: var(--muted); }
@@ -186,5 +239,5 @@ kbd {
 
 @media (prefers-reduced-motion: reduce) {
   .readout input.settle { animation: none; }
-  .fill, .knob, .steps button { transition: none; }
+  .fill, .knob, .steps button, .switch, .switch .thumb, .remember .box { transition: none; }
 }
