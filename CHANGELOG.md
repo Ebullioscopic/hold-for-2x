@@ -2,6 +2,15 @@
 
 All notable changes to Hold for 2x. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.5.0] - 2026-10-18
+
+### Added
+- Turn Hold for 2x off for the site you're on, from the popup. The switch only appears when the tab has a video. Off lasts until the tab reloads, or tick "Remember for this site" to keep it off. Useful on YouTube, which has its own hold-Space-for-2x.
+- Space bar now works for players inside embedded frames even when the key press lands on the outer page.
+
+### Fixed
+- Clicking the mouse during a space-bar hold no longer ends the hold.
+
 ## [2.4.0] - 2026-10-18
 
 ### Changed
@@ -32,6 +41,7 @@ All notable changes to Hold for 2x. Versions follow [Semantic Versioning](https:
 - Hold speed from 1.25x to 4x, set from the popup or with `[` and `]`.
 - On-screen badge while holding.
 
+[2.5.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/xmanojpx/hold-for-2x/releases/tag/v2.2.0

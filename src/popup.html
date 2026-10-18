@@ -36,6 +36,22 @@
       </div>
     </section>
 
+    <section class="site" id="site" hidden>
+      <div class="site-row">
+        <div class="site-text">
+          <p class="label">This site</p>
+          <p class="host" id="host"></p>
+        </div>
+        <button type="button" class="switch" id="siteSwitch" role="switch" aria-checked="true" aria-describedby="siteNote">
+          <span class="thumb"></span>
+        </button>
+      </div>
+      <div class="site-off" id="siteOff" hidden>
+        <label class="remember"><input type="checkbox" id="remember"><span class="box" aria-hidden="true"></span>Remember for this site</label>
+        <p class="site-note" id="siteNote"></p>
+      </div>
+    </section>
+
     <p class="hint" id="hint" aria-live="polite">Hold a playing video, or hold Space. Let go to return to normal.</p>
 
     <p class="keys">

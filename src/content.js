@@ -3,6 +3,7 @@
   const MOVE_LIMIT = 10;     // px of mouse movement that cancels a hold (dragging a seek bar)
   const SAFE_BOTTOM = 0.15;  // bottom 15% of a video is left alone, that's where controls live
   const MIN = 1.25, MAX = 4, STEP = 0.25, DEFAULT = 2;
+  const MSG = "hold-for-2x"; // tag on messages between frames
 
   let holdSpeed = DEFAULT;
   let timer = null, held = false, video = null, prevRate = 1;
@@ -11,11 +12,28 @@
   const clamp = (n) => Math.min(MAX, Math.max(MIN, Math.round(n * 100) / 100));
   const fmt = (n) => String(+n.toFixed(2));
 
-  chrome.storage.local.get("holdSpeed", (r) => {
+  /* ---------- on/off per site ---------- */
+
+  // the site in the address bar, even when this script runs inside an embedded player frame
+  const origins = location.ancestorOrigins;
+  let topHost = location.hostname;
+  try { if (origins && origins.length) topHost = new URL(origins[origins.length - 1]).hostname; } catch (e) {}
+  topHost = topHost.replace(/^www\./, "");
+
+  let remembered = false; // "Remember for this site" is on and the site is switched off
+  let offThisTab = false; // switched off from the popup until the tab reloads
+  const enabled = () => !remembered && !offThisTab;
+
+  chrome.storage.local.get(["holdSpeed", "disabledSites"], (r) => {
     if (r.holdSpeed) holdSpeed = clamp(r.holdSpeed);
+    remembered = (r.disabledSites || []).includes(topHost);
   });
   chrome.storage.onChanged.addListener((c) => {
     if (c.holdSpeed) holdSpeed = clamp(c.holdSpeed.newValue);
+    if (c.disabledSites) {
+      remembered = (c.disabledSites.newValue || []).includes(topHost);
+      if (!enabled()) stopAll();
+    }
   });
 
   /* ---------- on-screen badge (lives in a shadow root so site CSS can't touch it) ---------- */
@@ -106,11 +124,27 @@
     return best;
   }
 
+  // the biggest video currently on screen
+  function mainVideo() {
+    let best = null, bestArea = 0;
+    for (const v of findVideos(document, [])) {
+      const r = v.getBoundingClientRect();
+      const w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
+      const h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+      if (w < 100 || h < 100) continue;
+      if (w * h > bestArea) { best = v; bestArea = w * h; }
+    }
+    return best;
+  }
+
+  // a real video (loaded or loading), not an empty placeholder element
+  const hasRealVideo = () => findVideos(document, []).some((v) => v.readyState > 0 || v.currentSrc);
+
   /* ---------- hold to speed up ---------- */
 
   function startHold() {
     timer = null;
-    if (!video || video.paused) return;
+    if (!video || video.paused || !enabled()) return;
     held = true;
     prevRate = video.playbackRate;
     video.playbackRate = holdSpeed;
@@ -136,8 +170,14 @@
     video = null;
   }
 
+  function stopAll() {
+    release(true);
+    spaceDown = false;
+    relayTargets = [];
+  }
+
   window.addEventListener("mousedown", (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || !enabled()) return;
     if (e.target.closest && e.target.closest("input,select,textarea,[role=slider]")) return;
     const v = videoAt(e.clientX, e.clientY);
     if (!v || v.paused) return;
@@ -157,6 +197,7 @@
   }, true);
 
   window.addEventListener("mouseup", (e) => {
+    if (spaceDown) return; // a click during a space hold shouldn't end it
     const was = held;
     release();
     if (was) e.stopPropagation();
@@ -166,64 +207,123 @@
     if (swallowClick) { e.stopPropagation(); e.preventDefault(); }
   }, true);
 
-  window.addEventListener("blur", () => { release(true); spaceDown = false; });
+  window.addEventListener("blur", stopAll);
 
   /* ---------- hold the space bar, same as holding the mouse ---------- */
 
   let spaceDown = false;
+  let relayTargets = []; // child frames the current space press was handed to
 
   const isTyping = (t) => t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
-  // the biggest video currently on screen
-  function mainVideo() {
-    let best = null, bestArea = 0;
-    for (const v of findVideos(document, [])) {
-      const r = v.getBoundingClientRect();
-      const w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
-      const h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
-      if (w < 100 || h < 100) continue;
-      if (w * h > bestArea) { best = v; bestArea = w * h; }
+  // Embedded players live in iframes. Each frame tells its parent whether it has a video,
+  // so the parent can hand the space bar down when the key lands outside the player frame.
+  const childFrames = new Map(); // child window -> has a video
+  function framesWithVideo() {
+    const out = [];
+    for (const [win, has] of childFrames) if (has && !win.closed) out.push(win);
+    return out;
+  }
+
+  window.addEventListener("message", (e) => {
+    const d = e.data;
+    if (!d || d.tag !== MSG) return;
+    if (d.kind === "video" && e.source && e.source !== window) {
+      childFrames.set(e.source, !!d.has);
+      reportUp();
+    } else if (d.kind === "space" && e.source === window.parent && enabled()) {
+      if (d.phase === "down") spaceStart();
+      else spaceEnd();
     }
-    return best;
+  });
+
+  let lastReported = null;
+  function reportUp() {
+    if (window === window.top) return;
+    const has = !!mainVideo() || framesWithVideo().length > 0;
+    if (has === lastReported) return;
+    lastReported = has;
+    window.parent.postMessage({ tag: MSG, kind: "video", has }, "*");
+  }
+  if (window !== window.top) {
+    setInterval(reportUp, 1500);
+    window.addEventListener("load", reportUp);
+  }
+
+  // returns true if this frame (or a child frame) took the press
+  function spaceStart() {
+    const v = mainVideo();
+    if (v) {
+      spaceDown = true;
+      video = v;
+      timer = setTimeout(startHold, HOLD_MS);
+      return true;
+    }
+    const kids = framesWithVideo();
+    if (!kids.length) return false;
+    spaceDown = true;
+    relayTargets = kids;
+    kids.forEach((w) => w.postMessage({ tag: MSG, kind: "space", phase: "down" }, "*"));
+    return true;
+  }
+
+  function spaceEnd() {
+    if (!spaceDown) return;
+    spaceDown = false;
+    if (relayTargets.length) {
+      relayTargets.forEach((w) => w.postMessage({ tag: MSG, kind: "space", phase: "up" }, "*"));
+      relayTargets = [];
+      return;
+    }
+    const v = video;
+    const wasHeld = held;
+    release(true);
+    // a quick tap still plays or pauses, like the space bar always did
+    if (!wasHeld && v) {
+      if (v.paused) v.play().catch(() => {});
+      else v.pause();
+    }
   }
 
   window.addEventListener("keydown", (e) => {
     if (e.code !== "Space" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
-    if (isTyping(e.target)) return;
+    if (isTyping(e.target) || !enabled()) return;
     if (spaceDown) { e.preventDefault(); e.stopImmediatePropagation(); return; } // key repeat while we own the press
-    const v = mainVideo();
-    if (!v) return; // no video here, so space scrolls the page as usual
+    if (!spaceStart()) return; // no video here, so space scrolls the page as usual
     e.preventDefault();
     e.stopImmediatePropagation();
-    spaceDown = true;
-    video = v;
-    timer = setTimeout(startHold, HOLD_MS);
   }, true);
 
   window.addEventListener("keyup", (e) => {
     if (e.code !== "Space" || !spaceDown) return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    const v = video;
-    const wasHeld = held;
-    release(true);
-    spaceDown = false;
-    // a quick tap still plays or pauses, like the space bar always did
-    if (!wasHeld && v) {
-      if (v.paused) v.play().catch(() => {});
-      else v.pause();
-    }
+    spaceEnd();
   }, true);
 
   /* ---------- keyboard: [ slower, ] faster ---------- */
 
   window.addEventListener("keydown", (e) => {
     const t = e.target;
-    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (isTyping(t) || !enabled()) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key !== "]" && e.key !== "[") return;
     holdSpeed = clamp(holdSpeed + (e.key === "]" ? STEP : -STEP));
     chrome.storage.local.set({ holdSpeed });
     showBadge(fmt(holdSpeed) + "x", held);
   }, true);
+
+  /* ---------- popup asks about this tab ---------- */
+
+  chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+    if (!msg || msg.tag !== MSG) return;
+    if (msg.kind === "status") {
+      // only frames with a real video answer, so the popup shows the switch on video sites only
+      if (!hasRealVideo()) return;
+      reply({ host: topHost, offThisTab, remembered });
+    } else if (msg.kind === "set-tab") {
+      offThisTab = !msg.on;
+      if (!enabled()) stopAll();
+    }
+  });
 })();

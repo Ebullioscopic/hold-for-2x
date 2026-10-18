@@ -121,3 +121,60 @@ chrome.storage.onChanged.addListener((c) => {
     render(false);
   }
 });
+
+/* ---------- this site: on/off, optionally remembered ---------- */
+
+const MSG = "hold-for-2x";
+const site = document.getElementById("site");
+const hostEl = document.getElementById("host");
+const siteSwitch = document.getElementById("siteSwitch");
+const siteOff = document.getElementById("siteOff");
+const remember = document.getElementById("remember");
+const siteNote = document.getElementById("siteNote");
+let tabId = null, siteHost = null;
+
+function renderSite(on, remembered) {
+  siteSwitch.setAttribute("aria-checked", String(on));
+  siteSwitch.setAttribute("aria-label", "Hold for 2x on " + siteHost);
+  siteOff.hidden = on;
+  remember.checked = remembered;
+  siteNote.textContent = remembered ? "Always off here." : "Off until you reload this tab.";
+}
+
+function setRemembered(host, on) {
+  chrome.storage.local.get("disabledSites", (r) => {
+    const list = new Set(r.disabledSites || []);
+    if (on) list.add(host); else list.delete(host);
+    chrome.storage.local.set({ disabledSites: [...list] });
+  });
+}
+
+siteSwitch.addEventListener("click", () => {
+  const on = siteSwitch.getAttribute("aria-checked") !== "true";
+  chrome.tabs.sendMessage(tabId, { tag: MSG, kind: "set-tab", on }, () => void chrome.runtime.lastError);
+  if (on) setRemembered(siteHost, false);
+  else if (remember.checked) setRemembered(siteHost, true);
+  renderSite(on, on ? false : remember.checked);
+});
+
+remember.addEventListener("change", () => {
+  setRemembered(siteHost, remember.checked);
+  // unticking keeps it off in this tab; the switch is how you turn it back on
+  chrome.tabs.sendMessage(tabId, { tag: MSG, kind: "set-tab", on: false }, () => void chrome.runtime.lastError);
+  renderSite(false, remember.checked);
+});
+
+// Ask the open tab whether it has a video. Only frames with a video answer,
+// so the switch never shows on pages without one.
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  const tab = tabs && tabs[0];
+  if (!tab || tab.id == null) return;
+  tabId = tab.id;
+  chrome.tabs.sendMessage(tabId, { tag: MSG, kind: "status" }, (res) => {
+    if (chrome.runtime.lastError || !res) return;
+    siteHost = res.host;
+    hostEl.textContent = res.host;
+    renderSite(!res.offThisTab && !res.remembered, res.remembered);
+    site.hidden = false;
+  });
+});
