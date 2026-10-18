@@ -19,7 +19,7 @@ Works in Chrome and other Chromium browsers (Edge, Brave).
 
 - **Hold** the left mouse button on a playing video. After a quarter of a second it speeds up. Release to go back.
 - **Hold the space bar** to do the same thing from the keyboard. A quick tap still plays and pauses.
-- **Set your speed** from the toolbar icon. Type a value or use the + and − buttons. The default is 2x, and anything from 1.25x to 4x works.
+- **Set your speed** from the toolbar icon. Type a value, use the + and − buttons, or drag the ruler. The default is 2x, and anything from 1.25x to 4x works.
 - **Change it from the keyboard** with `[` (slower) and `]` (faster), in steps of 0.25x. A small badge shows the new speed.
 
 ## Good to know
@@ -33,6 +33,10 @@ Works in Chrome and other Chromium browsers (Edge, Brave).
 
 The extension collects nothing and makes no network requests. The only thing it stores is your chosen speed, locally in your browser.
 
+## Credits
+
+The popup uses [Fraunces](https://github.com/undercasetype/Fraunces) and [Work Sans](https://github.com/weiweihuanghuang/Work-Sans), both under the SIL Open Font License 1.1. The font files and their licenses are in `fonts/`.
+
 ## License
 
-MIT
+MIT. See `CHANGELOG.md` for version history.

@@ -4,27 +4,42 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hold for 2x</title>
+  <link rel="preload" href="../fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <main class="popup">
-    <h1><img src="../icons/icon48.png" alt="">Hold for 2x</h1>
+    <header>
+      <img src="../icons/icon48.png" alt="">
+      <h1>Hold for 2x</h1>
+    </header>
 
-    <section class="card" aria-labelledby="speed-label">
-      <p class="label" id="speed-label">Speed while holding</p>
-      <div class="stepper">
-        <button type="button" id="dec" aria-label="Slower">&minus;</button>
+    <section class="meter" aria-labelledby="speed-label">
+      <p class="label" id="speed-label">Hold speed</p>
+
+      <div class="value">
         <label class="readout">
           <input id="speed" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-labelledby="speed-label">
-          <span aria-hidden="true">x</span>
+          <span class="unit" aria-hidden="true">x</span>
         </label>
-        <button type="button" id="inc" aria-label="Faster">+</button>
+        <div class="steps">
+          <button type="button" id="inc" aria-label="Faster">+</button>
+          <button type="button" id="dec" aria-label="Slower">&minus;</button>
+        </div>
+      </div>
+
+      <div class="ruler" id="ruler" role="slider" tabindex="0" aria-label="Hold speed"
+           aria-valuemin="1.25" aria-valuemax="4" aria-valuenow="2">
+        <div class="track"><div class="fill" id="fill"></div></div>
+        <div class="ticks" id="ticks"></div>
+        <div class="knob" id="knob"></div>
       </div>
     </section>
 
-    <p class="hint" id="hint" aria-live="polite">Hold the mouse on a playing video, or hold the space bar, to speed it up. Let go to return to normal. Pick anything from 1.25x to 4x.</p>
+    <p class="hint" id="hint" aria-live="polite">Hold a playing video, or hold Space. Let go to return to normal.</p>
 
     <p class="keys">
+      <span><kbd>Space</kbd>Hold</span>
       <span><kbd>[</kbd>Slower</span>
       <span><kbd>]</kbd>Faster</span>
     </p>
