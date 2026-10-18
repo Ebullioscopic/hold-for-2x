@@ -2,6 +2,11 @@
 
 All notable changes to Hold for 2x. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.6.0] - 2026-10-19
+
+### Changed
+- New popup style, Swiss: paper and ink, hairline borders, squared controls, and one signal red. Same layout and controls as before, only the look changed.
+
 ## [2.5.0] - 2026-10-18
 
 ### Added
@@ -41,6 +46,7 @@ All notable changes to Hold for 2x. Versions follow [Semantic Versioning](https:
 - Hold speed from 1.25x to 4x, set from the popup or with `[` and `]`.
 - On-screen badge while holding.
 
+[2.6.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/xmanojpx/hold-for-2x/compare/v2.2.0...v2.3.0
