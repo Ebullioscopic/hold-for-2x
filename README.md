@@ -4,7 +4,7 @@ Press and hold on any video to watch it at 2x. Let go and it drops back to norma
 
 It works the way holding the screen does in a phone video app, but on the web, including sites whose players have no speed control of their own. Videos play at normal speed until you hold.
 
-<video src="https://github.com/user-attachments/assets/3861b1e8-b052-40fd-acfd-c66197127f41" controls muted playsinline width="800"></video>
+https://github.com/user-attachments/assets/3861b1e8-b052-40fd-acfd-c66197127f41
 
 ## Install
 
