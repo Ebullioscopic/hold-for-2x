@@ -2,6 +2,13 @@
 
 All notable changes to Hold for 2x. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.7.0] - 2026-10-21
+
+### Fixed
+- Improved video detection for feed-style players (LinkedIn, etc.) — now finds videos as small as 64×64px (was 100×100px)
+- Fixed space bar hold incorrectly targeting paused videos in same-origin iframes instead of the main playing video
+- Mouse hold now only searches iframe content when the cursor is actually over that iframe
+
 ## [2.6.0] - 2026-10-19
 
 ### Changed

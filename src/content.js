@@ -103,22 +103,43 @@
   // the video under the cursor, even when an overlay sits on top of it
   function videoAt(x, y) {
     let best = null, bestArea = 0;
-    for (const v of findVideos(document, [])) {
+    // First, check videos in the main document
+    const mainCandidates = findVideos(document, []);
+    for (const v of mainCandidates) {
       const r = v.getBoundingClientRect();
-      if (r.width < 100 || r.height < 100) continue;
+      if (r.width < 64 || r.height < 64) continue;
       if (x < r.left || x > r.right || y < r.top || y > r.bottom) continue;
       if (y > r.bottom - r.height * SAFE_BOTTOM) continue;
       const area = r.width * r.height;
       if (area > bestArea) { best = v; bestArea = area; }
     }
-    // fallback: a big playing video that covers most of the page
+    // Only check iframe videos if mouse is over an iframe
+    if (!best) {
+      for (const iframe of document.querySelectorAll("iframe")) {
+        const iframeRect = iframe.getBoundingClientRect();
+        if (x < iframeRect.left || x > iframeRect.right || y < iframeRect.top || y > iframeRect.bottom) continue;
+        try {
+          if (iframe.contentDocument) {
+            const iframeVideos = findVideos(iframe.contentDocument, []);
+            for (const v of iframeVideos) {
+              const r = v.getBoundingClientRect();
+              if (r.width < 64 || r.height < 64) continue;
+              if (x < r.left || x > r.right || y < r.top || y > r.bottom) continue;
+              if (y > r.bottom - r.height * SAFE_BOTTOM) continue;
+              const area = r.width * r.height;
+              if (area > bestArea) { best = v; bestArea = area; }
+            }
+          }
+        } catch (e) { /* cross-origin, skip */ }
+      }
+    }
+    // fallback: any playing video in main document
     if (!best && y < window.innerHeight * (1 - SAFE_BOTTOM)) {
-      for (const v of findVideos(document, [])) {
+      for (const v of mainCandidates) {
+        if (v.paused) continue;
         const r = v.getBoundingClientRect();
         const area = r.width * r.height;
-        if (!v.paused && area > window.innerWidth * window.innerHeight * 0.4 && area > bestArea) {
-          best = v; bestArea = area;
-        }
+        if (area > bestArea) { best = v; bestArea = area; }
       }
     }
     return best;
@@ -127,12 +148,37 @@
   // the biggest video currently on screen
   function mainVideo() {
     let best = null, bestArea = 0;
-    for (const v of findVideos(document, [])) {
+    // First, check videos in the main document (prefer non-paused)
+    const mainCandidates = findVideos(document, []);
+    for (const v of mainCandidates) {
       const r = v.getBoundingClientRect();
       const w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
       const h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
-      if (w < 100 || h < 100) continue;
-      if (w * h > bestArea) { best = v; bestArea = w * h; }
+      if (w < 64 || h < 64) continue;
+      const area = w * h;
+      // Prefer non-paused videos, then by area
+      if (!best || (!v.paused && best.paused) || (!v.paused === !best.paused && area > bestArea)) {
+        best = v; bestArea = area;
+      }
+    }
+    // Then check iframe videos (only same-origin), but only if no good main video found
+    if (best && !best.paused) return best; // Already have a playing video in main doc
+    for (const iframe of document.querySelectorAll("iframe")) {
+      try {
+        if (iframe.contentDocument) {
+          const iframeVideos = findVideos(iframe.contentDocument, []);
+          for (const v of iframeVideos) {
+            const r = v.getBoundingClientRect();
+            const w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
+            const h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+            if (w < 64 || h < 64) continue;
+            const area = w * h;
+            if (!best || (!v.paused && best.paused) || (!v.paused === !best.paused && area > bestArea)) {
+              best = v; bestArea = area;
+            }
+          }
+        }
+      } catch (e) { /* cross-origin, skip */ }
     }
     return best;
   }
@@ -285,11 +331,11 @@
     }
   }
 
-  window.addEventListener("keydown", (e) => {
+window.addEventListener("keydown", (e) => {
     if (e.code !== "Space" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
     if (isTyping(e.target) || !enabled()) return;
-    if (spaceDown) { e.preventDefault(); e.stopImmediatePropagation(); return; } // key repeat while we own the press
-    if (!spaceStart()) return; // no video here, so space scrolls the page as usual
+    if (spaceDown) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (!spaceStart()) return;
     e.preventDefault();
     e.stopImmediatePropagation();
   }, true);
